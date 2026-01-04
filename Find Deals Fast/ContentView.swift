@@ -8,14 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var userSettings = UserSettings()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if userSettings.hasCompletedOnboarding {
+                MainTabView()
+                    .environmentObject(userSettings)
+            } else {
+                OnboardingView()
+                    .environmentObject(userSettings)
+            }
         }
-        .padding()
+    }
+}
+
+struct MainTabView: View {
+    @EnvironmentObject var userSettings: UserSettings
+    
+    var body: some View {
+        TabView {
+            HomeView()
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+            
+            WishlistView()
+                .tabItem {
+                    Label("Wishlist", systemImage: "heart.fill")
+                }
+                .badge(userSettings.wishlist.count)
+        }
+        .accentColor(Color(hex: "1475e0"))
     }
 }
 
